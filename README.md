@@ -1,5 +1,5 @@
 # Voyanta — Travel & Trip Planner
-    `
+
 **Tagline:** Every journey, intelligently planned.
 
 Voyanta is a responsive travel planning web application built for the GDG BPPIMT Tech Team selection process. The core application uses HTML, CSS, and vanilla JavaScript (ES modules), with Leaflet maps and public travel APIs.
