@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Voyanta helps you discover destinations, check weather, plan routes, and organize unforgettable trips.">
+  <title>Voyanta — Travel, thoughtfully planned</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://tile.openstreetmap.org">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="Voyanta home"><span class="brand-mark">V</span><span>voyanta<span class="brand-dot">.</span><small>TRAVEL, THOUGHTFULLY PLANNED</small></span></a>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="explore"><span>⌕</span> Explore</button>
+        <button class="nav-item" data-view="trips"><span>▤</span> My trips <span class="nav-count" id="trip-count">0</span></button>
+        <button class="nav-item" data-view="route"><span>⌁</span> Route planner</button>
+        <button class="nav-item" data-view="favorites"><span>♡</span> Favourites</button>
+        <button class="nav-item" data-view="budget"><span>₹</span> Budget planner</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-tip"><div class="tip-icon">✦</div><strong>Your next adventure</strong><p>Great trips start with a little curiosity.</p><button class="text-button" data-view="explore">Explore places <span>→</span></button></div>
+        <button class="nav-item" id="theme-toggle"><span id="theme-icon">◐</span> Switch to dark mode</button>
+        <div class="profile-row"><div class="avatar">V</div><div><strong>Travel planner</strong><small id="storage-mode">Local demo mode</small></div><span class="status-dot"></span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobile-menu" aria-label="Open menu">☰</button>
+        <div class="breadcrumb"><span>Workspace</span><span class="crumb-sep">/</span><strong id="page-title">Explore</strong></div>
+        <div class="top-actions"><span class="date-label" id="today-label"></span><button class="icon-button" id="header-theme" aria-label="Toggle theme">◐</button><button class="primary-button small" data-view="trips">＋ New trip</button></div>
+      </header>
+
+      <div id="notice-region" class="notice-region" aria-live="polite"></div>
+      <section class="view active" id="view-explore">
+        <div class="welcome-row"><div><div class="eyebrow"><span class="eyebrow-dot"></span> YOUR PERSONAL TRAVEL COMPANION</div><h1>Find your <em>somewhere.</em></h1><p class="subheading">Discover new places, check the forecast, and turn inspiration into a trip worth remembering.</p></div><div class="welcome-stamp"><span>✳</span><small>MADE FOR<br>THE CURIOUS</small></div></div>
+        <form class="search-panel" id="destination-search-form">
+          <div class="search-symbol">⌕</div><label class="search-input-wrap"><span>WHERE TO?</span><input id="destination-query" name="destination" placeholder="Search a city, landmark or destination..." autocomplete="off" required></label><button class="primary-button" type="submit" id="search-button">Discover places <span>→</span></button>
+        </form>
+        <div class="section-heading"><div><h2>Explore the world</h2><p>A few ideas to get your journey started.</p></div><span class="muted-chip">CURATED PICKS</span></div>
+        <div class="destination-grid" id="curated-grid">
+          <button class="destination-card" data-destination="Darjeeling, West Bengal, India"><div class="destination-photo photo-darjeeling"><span class="photo-tag">MOUNTAINS</span><span class="photo-arrow">↗</span></div><div class="destination-meta"><div><strong>Darjeeling</strong><small>West Bengal, India</small></div><span class="card-arrow">↗</span></div></button>
+          <button class="destination-card" data-destination="Goa, India"><div class="destination-photo photo-goa"><span class="photo-tag">COASTAL</span><span class="photo-arrow">↗</span></div><div class="destination-meta"><div><strong>Goa</strong><small>India</small></div><span class="card-arrow">↗</span></div></button>
+          <button class="destination-card" data-destination="Jaipur, Rajasthan, India"><div class="destination-photo photo-jaipur"><span class="photo-tag">CULTURE</span><span class="photo-arrow">↗</span></div><div class="destination-meta"><div><strong>Jaipur</strong><small>Rajasthan, India</small></div><span class="card-arrow">↗</span></div></button>
+          <button class="destination-card" data-destination="Sikkim, India"><div class="destination-photo photo-sikkim"><span class="photo-tag">ADVENTURE</span><span class="photo-arrow">↗</span></div><div class="destination-meta"><div><strong>Sikkim</strong><small>India</small></div><span class="card-arrow">↗</span></div></button>
+        </div>
+        <div class="section-heading result-heading"><div><h2 id="result-title">Your discoveries</h2><p id="result-description">Search for a destination to see live location and weather information.</p></div><span class="live-pill"><span></span> LIVE API DATA</span></div>
+        <div id="search-results" class="results-list empty-results"><div class="empty-illustration">⌖</div><strong>Your next place is out there.</strong><p>Search above, or choose one of the destinations to explore.</p></div>
+        <div class="destination-detail hidden" id="destination-detail">
+          <div class="detail-header"><div><div class="eyebrow">DESTINATION DETAILS</div><h2 id="detail-name">Selected destination</h2><p id="detail-address" class="muted-text"></p></div><div class="detail-actions"><button class="secondary-button" id="favorite-current">♡ Save favourite</button><button class="primary-button" id="add-current-trip">＋ Add to trip</button></div></div>
+          <div class="detail-layout">
+            <div class="map-panel"><div class="panel-title"><div><strong>Explore the map</strong><small>Move around to discover the area</small></div><span class="map-badge">OPENSTREETMAP</span></div><div id="destination-map" class="map"></div><div class="coordinates" id="coordinates">Coordinates unavailable</div></div>
+            <div class="weather-panel"><div class="panel-title"><div><strong>Weather right now</strong><small id="weather-location">Live conditions</small></div><span class="weather-sun">☼</span></div><div id="weather-content" class="weather-content"><div class="loading-line"></div><p class="muted-text">Search a destination to load weather.</p></div><div class="forecast-heading">UPCOMING FORECAST</div><div id="forecast-content" class="forecast-list"></div></div>
+          </div>
+          <div class="attractions-panel"><div class="panel-title"><div><strong>Nearby places</strong><small>Points of interest from OpenStreetMap, when available</small></div><button class="secondary-button small" id="load-attractions">Find nearby places</button></div><div id="attractions-list" class="attractions-grid"><p class="muted-text">Choose “Find nearby places” to search the area.</p></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-trips">
+        <div class="page-intro"><div class="eyebrow">YOUR TRAVEL JOURNAL</div><h1>Trips, <em>in the making.</em></h1><p class="subheading">Keep every plan, stop, and little detail in one place.</p></div>
+        <div class="content-toolbar"><div><h2>Your trips</h2><p id="trips-summary">No trips planned yet.</p></div><button class="primary-button" id="create-trip">＋ Create a trip</button></div>
+        <div class="trip-create-card hidden" id="trip-create-card"><form id="trip-form" class="trip-form"><div class="form-heading"><div><h3>Start a new adventure</h3><p>Give your trip a name and a date range.</p></div><button type="button" class="icon-button" id="close-trip-form" aria-label="Close form">×</button></div><div class="form-grid"><label>Trip name<input id="trip-name" required maxlength="100" placeholder="e.g. Himalayan escape"></label><label>Start date<input id="trip-start" type="date" required></label><label>End date<input id="trip-end" type="date" required></label><label class="full-field">A little about this trip<textarea id="trip-description" rows="2" placeholder="What are you looking forward to?"></textarea></label></div><div class="form-actions"><button type="button" class="secondary-button" id="cancel-trip">Cancel</button><button type="submit" class="primary-button">Create trip →</button></div></form></div>
+        <div class="trip-grid" id="trips-grid"></div>
+        <div class="itinerary-editor hidden" id="itinerary-editor"></div>
+      </section>
+
+      <section class="view" id="view-route">
+        <div class="page-intro"><div class="eyebrow">THE JOURNEY MATTERS</div><h1>Map your <em>way there.</em></h1><p class="subheading">Plan a driving route between two places and see the distance at a glance.</p></div>
+        <div class="route-layout"><div class="route-form-card"><div class="panel-title"><div><strong>Build your route</strong><small>Driving route via OSRM</small></div><span class="route-icon">⌁</span></div><form id="route-form"><label>Starting point<input id="route-start" placeholder="e.g. Kolkata, India" required></label><label>Destination<input id="route-end" placeholder="e.g. Darjeeling, India" required></label><button class="primary-button full-width" type="submit">Calculate route <span>→</span></button></form><div id="route-summary" class="route-summary"><div class="empty-illustration">⌁</div><strong>Your route, at a glance.</strong><p>Enter two places to calculate an approximate driving route.</p></div><p class="api-note">Routes use the public OSRM demo service and are estimates, not live traffic or navigation instructions.</p></div><div class="route-map-panel"><div id="route-map" class="map route-map"></div><div class="map-footer"><span>© OpenStreetMap contributors</span><span>ROUTE PREVIEW</span></div></div></div>
+      </section>
+
+      <section class="view" id="view-favorites">
+        <div class="page-intro"><div class="eyebrow">PLACES TO COME BACK TO</div><h1>Your saved <em>somewheres.</em></h1><p class="subheading">A collection of destinations you don't want to forget.</p></div><div id="favorites-grid" class="destination-grid favorites-grid"></div>
+      </section>
+
+      <section class="view" id="view-budget">
+        <div class="page-intro"><div class="eyebrow">TRAVEL WITH A PLAN</div><h1>Good trips, <em>smart budgets.</em></h1><p class="subheading">Estimate your expenses before you go. All amounts are your own estimates in Indian rupees.</p></div>
+        <div class="budget-layout"><div class="budget-card"><div class="panel-title"><div><strong>Trip expenses</strong><small>Choose a trip, then enter estimates</small></div><span class="budget-icon">₹</span></div><label>Choose a trip<select id="budget-trip-select"><option value="">Select a trip</option></select></label><div class="budget-fields"><label>Transportation (₹)<input type="number" min="0" step="100" id="budget-transport" value="0"></label><label>Accommodation (₹)<input type="number" min="0" step="100" id="budget-stay" value="0"></label><label>Food & drinks (₹)<input type="number" min="0" step="100" id="budget-food" value="0"></label><label>Activities (₹)<input type="number" min="0" step="100" id="budget-activities" value="0"></label><label>Miscellaneous (₹)<input type="number" min="0" step="100" id="budget-misc" value="0"></label></div><button class="primary-button full-width" id="save-budget">Save budget estimate</button><p class="api-note">These are user-entered estimates, not live prices or bookings.</p></div><div class="budget-total-card"><div class="eyebrow">YOUR ESTIMATED TOTAL</div><div class="budget-total" id="budget-total">₹0</div><p id="budget-caption">Choose a trip to start planning its budget.</p><div class="budget-breakdown" id="budget-breakdown"></div></div></div>
+      </section>
+
+      <footer class="site-footer"><span>© <span id="year"></span> Voyanta</span><span>Made for curious minds <span class="footer-star">✳</span></span><span>Maps © OpenStreetMap contributors</span></footer>
+    </main>
+  </div>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <dialog id="confirm-dialog" class="confirm-dialog"><form method="dialog"><div class="dialog-mark">!</div><h3 id="confirm-title">Are you sure?</h3><p id="confirm-message">This action cannot be undone.</p><div class="dialog-actions"><button class="secondary-button" value="cancel">Cancel</button><button class="danger-button" value="confirm" id="confirm-action">Continue</button></div></form></dialog>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
